@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>我的乐谱转换器</title>
+  <style>
+    body { padding: 20px; font-family: sans-serif; }
+    textarea { width: 100%; height: 100px; }
+    #output { margin-top: 15px; font-family: monospace; white-space: pre; background: #f0f0f0; padding: 10px; }
+  </style>
+</head>
+<body>
+  <h3>输入音符 (例: C4 E4 | D4)</h3>
+  <textarea id="input" placeholder="C4 E4 G4 | D4 | C5"></textarea>
+  <button onclick="convert()">转换</button>
+  <div id="output"></div>
+
+  <script>
+    function convert() {
+      const map = {'C':'T','D':'2','E':'3','F':'M','G':'5','A':'6','B':'7'};
+      const input = document.getElementById('input').value.trim();
+      if (!input) return;
+
+      const slots = input.split('|').map(s => s.trim()).filter(Boolean);
+      const result = slots.map(slot => {
+        const notes = slot.split(/\s+/).filter(n => n);
+        return notes.map(note => {
+          const pitch = note.match(/[A-G]/);
+          const octave = parseInt(note.match(/\d+/));
+          let sym = map[pitch] || '?';
+          if (octave < 4) sym = '.'.repeat(4 - octave) + sym;
+          else if (octave > 4) sym = sym + '.'.repeat(octave - 4);
+          return sym;
+        }).join('');
+      }).join('  ');
+      document.getElementById('output').innerText = result;
+    }
+  </script>
+</body>
+</html>
